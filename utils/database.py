@@ -38,13 +38,43 @@ class User(Base):
         return "<User(id='%s', wins='%s')>" % (self.id, self.wins)
 
 
+class Tribute(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    image = Column(String, nullable=True)
+
+
+class ItemType(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)  # weapon/medicine
+
+
+class Item(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    type_id = Column(Integer)
+
+
+class TributesItem(Base):
+    id = Column(Integer, primary_key=True)
+    game_id = Column(Integer, nullable=False)
+    tribute_id = Column(Integer, nullable=False)
+    item_id = Column(Integer, nullable=False)
+
+
+class Alliance(Base):
+    id = Column(Integer, primary_key=True)
+    game_id = Column(Integer, nullable=False)
+    tribute_1 = Column(Integer, nullable=False)
+    tribute_2 = Column(Integer, nullable=False)
+
+
 class HungerGame(Base):
     __tablename__ = "hunger_game"
     id = Column(Integer, primary_key=True)
     title = Column(String, default="Hunger Games", nullable=False)
-    created_by = Column(Integer, nullable=False)  # User.id
+    game_master = Column(Integer, nullable=False)  # User.id
     winner = Column(Integer, nullable=True)  # User.id
-
 
 
 if __name__ == "__main__":
