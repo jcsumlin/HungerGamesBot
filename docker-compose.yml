@@ -1,0 +1,14 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: bot
+      POSTGRES_PASSWORD: supersecret1
+      POSTGRES_DB: bot
+    ports:
+      - "5432:5432"
+    restart: unless-stopped

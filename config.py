@@ -6,3 +6,7 @@ BLACKLIST = []
 STARTUP_COGS = [
     "cogs.HungerGames"
 ]
+POSTGRESS_USER = "bot"
+POSTGRESS_PASS = "supersecret1"
+POSTGRESS_HOST = "0.0.0.0:32768"
+POSTGRESS_DB = "bot"

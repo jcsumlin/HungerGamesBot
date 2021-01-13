@@ -16,8 +16,9 @@ class HungerGames(commands.Cog, name="HungerGames"):
         pass
 
     @tribute.command(name="add")
-    async def __add(self, context):
+    async def __add(self, context, name, image):
         pass
+
 
 def setup(bot):
     bot.add_cog(HungerGames(bot))
