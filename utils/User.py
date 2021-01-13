@@ -1,12 +1,9 @@
 from utils.database import Database
 
 
-class HungerGame(Database):
+class User(Database):
     def __init__(self):
         super().__init__()
-
-    def create(self):
-        self.connection.execute("")
 
     def get(self):
         pass

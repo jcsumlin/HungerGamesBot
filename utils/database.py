@@ -38,7 +38,16 @@ class User(Base):
         return "<User(id='%s', wins='%s')>" % (self.id, self.wins)
 
 
-if  __name__ == "__main__":
-    path =  f'postgresql://{config.POSTGRESS_USER}:{config.POSTGRESS_PASS}@{config.POSTGRESS_HOST}/{config.POSTGRESS_DB}'
+class HungerGame(Base):
+    __tablename__ = "hunger_game"
+    id = Column(Integer, primary_key=True)
+    title = Column(String, default="Hunger Games", nullable=False)
+    created_by = Column(Integer, nullable=False)  # User.id
+    winner = Column(Integer, nullable=True)  # User.id
+
+
+
+if __name__ == "__main__":
+    path = f'postgresql://{config.POSTGRESS_USER}:{config.POSTGRESS_PASS}@{config.POSTGRESS_HOST}/{config.POSTGRESS_DB}'
     engine = create_engine(path, echo=True)
     Base.metadata.create_all(engine)

@@ -9,3 +9,17 @@
 4) Register test bot with [discord here](https://discord.com/developers/applications)
 5) Place keys in `config.py`
 6) Run `main.py` 
+
+
+# MVP
+- Create new custom hunger game
+    - Game master can set custom name.
+    - Game master can enable/disable items
+    - Game master can enable/disable alliances
+- Tributes can be nominated/renominated by users
+- Items should maintain continuity (if a tribute has a weapon they will have a much larger change of killing another tribute)
+    - Medicine can be used to heal tributes of natural injuries (sprained ankles, fevers, dehydration, heat stroke etv.)
+- Random natural disasters can occur.
+- Tributes can either go for a cornucopia or run away
+- Only one winner can be survive
+- Tributes can have custom names/images
