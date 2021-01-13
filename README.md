@@ -23,3 +23,6 @@
 - Tributes can either go for a cornucopia or run away
 - Only one winner can be survive
 - Tributes can have custom names/images
+- Alliances between tributes can shift. 
+    - The tribute that is left is either abandoned by the previous tribute or killed in a backstabbing event
+    - Items are shared in alliances 
