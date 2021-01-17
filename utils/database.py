@@ -39,23 +39,27 @@ class User(Base):
 
 
 class Tribute(Base):
+    __tablename__ = 'tribute'
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     image = Column(String, nullable=True)
 
 
 class ItemType(Base):
+    __tablename__ = 'item_type'
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)  # weapon/medicine
 
 
 class Item(Base):
+    __tablename__ = 'item'
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     type_id = Column(Integer)
 
 
 class TributesItem(Base):
+    __tablename__ = 'tributes_item'
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, nullable=False)
     tribute_id = Column(Integer, nullable=False)
@@ -63,6 +67,7 @@ class TributesItem(Base):
 
 
 class Alliance(Base):
+    __tablename__ = 'alliance'
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, nullable=False)
     tribute_1 = Column(Integer, nullable=False)
@@ -75,6 +80,16 @@ class HungerGame(Base):
     title = Column(String, default="Hunger Games", nullable=False)
     game_master = Column(Integer, nullable=False)  # User.id
     winner = Column(Integer, nullable=True)  # User.id
+    winner_tribute = Column(String, nullable=True)  # Tribute of winner
+
+
+class Event(Base):
+    __tablename__ = "event"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    number_of_tributes = Column(Integer, nullable=False)
+    time = Column(String, nullable=False)  # Day/Night/Any
+    prerequisites = Column(String, nullable=True)  # Array of prerequisite conditions wrapped in a string
 
 
 if __name__ == "__main__":

@@ -65,18 +65,17 @@ class Cycle:
         list_of_events = self.find_number_of_tributes_in_events()
         tribute_groups = self.select_tributes(list_of_events)
         for tribute_group in tribute_groups:
-            n = len(tribute_group)
             if self.time == "Day":
-                event = self.__get_daytime_event__()
+                event = self.__get_daytime_event__(tribute_group)
             else:
-                event = self.__get_nighttime_event()
+                event = self.__get_nighttime_event__(tribute_group)
             events.append(event)
         return events
 
-    def __get_daytime_event__(self):
+    def __get_daytime_event__(self, tributes):
         """Returns a random daytime event that matches the constraints"""
         pass
 
-    def __get_nighttime_event(self):
+    def __get_nighttime_event__(self, tributes):
         """Returns a random nighttime event that matches the constraints"""
         pass
