@@ -1,5 +1,7 @@
 import random
 
+from .Event import Event
+
 
 class Cycle:
     def __init__(self, tributes: list, daytime: bool):
@@ -72,10 +74,42 @@ class Cycle:
             events.append(event)
         return events
 
-    def __get_daytime_event__(self, tributes):
+    @staticmethod
+    def __get_daytime_event__(tributes):
         """Returns a random daytime event that matches the constraints"""
-        pass
+        n = len(tributes)
+        events_for_n_tributes = []  # Placeholder until code is written
 
-    def __get_nighttime_event__(self, tributes):
+        events = []
+        for event in events_for_n_tributes:  # Create an Event object for each event instance
+            i = Event(tributes, event)
+            events.append(i)
+
+        for event in events:  # Filter by time of day == day
+            if event.time != "day" or "any":
+                events.pop(events.index(event))
+        for event in events:  # Filter by subject tribute meeting prerequisites
+            if not event.subject_meets_prerequisites():
+                events.pop(events.index(event))
+
+        return random.choice(events)  # Return a random event from the remaining candidates
+
+    @staticmethod
+    def __get_nighttime_event__(tributes):
         """Returns a random nighttime event that matches the constraints"""
-        pass
+        n = len(tributes)
+        events_for_n_tributes = []  # Placeholder until code is written
+
+        events = []
+        for event in events_for_n_tributes:  # Create an Event object for each event instance
+            i = Event(tributes, event)
+            events.append(i)
+
+        for event in events:  # Filter by time of day == night
+            if event.time != "night" or "any":
+                events.pop(events.index(event))
+        for event in events:  # Filter by subject tribute meeting prerequisites
+            if not event.subject_meets_prerequisites():
+                events.pop(events.index(event))
+
+        return random.choice(events)  # Return a random event from the remaining candidates

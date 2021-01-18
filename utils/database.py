@@ -5,6 +5,7 @@ import sqlalchemy as db
 from loguru import logger
 
 from sqlalchemy import MetaData, Table, Column, String, Integer, create_engine
+from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -14,7 +15,7 @@ else:
     import config
 
 
-class Database():
+class Database:
     # replace the user, password, hostname and database according to your configuration according to your information
     engine = db.create_engine(
         f'postgresql://{config.POSTGRESS_USER}:{config.POSTGRESS_PASS}@{config.POSTGRESS_HOST}/{config.POSTGRESS_DB}')
@@ -86,10 +87,7 @@ class HungerGame(Base):
 class Event(Base):
     __tablename__ = "event"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    number_of_tributes = Column(Integer, nullable=False)
-    time = Column(String, nullable=False)  # Day/Night/Any
-    prerequisites = Column(String, nullable=True)  # Array of prerequisite conditions wrapped in a string
+    data = Column(JSONB, nullable=False)  # JSON blob containing event information
 
 
 if __name__ == "__main__":
