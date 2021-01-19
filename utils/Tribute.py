@@ -3,6 +3,7 @@ class Tribute:
         self.id = id
         self.name = name
         self.image = image
+        self.alive = True
 
         self.weapons = []
         self.medicine = []

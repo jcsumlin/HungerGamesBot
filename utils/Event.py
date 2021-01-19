@@ -18,6 +18,8 @@ class Event:
         self.number_of_tributes = self.json["number_of_tributes"]
         self.time = self.json["time"]
         self.prerequisites = self.json["prerequisites"]
+        self.dies = self.json["dies"]
+        self.survives = self.json["survives"]
 
     def subject_meets_prerequisites(self):
         """Returns True if the subject tribute has all of the prerequisites"""
@@ -31,6 +33,28 @@ class Event:
             return True
         else:
             return False
+
+    def cull_tributes(self):
+        """Randomly selects tributes involved in the event to either die or survive"""
+        n_dead = self.dies["number"]
+
+        dead = []
+        survive = []
+
+        if self.dies["subject"]:  # Remove the subject from the dies/survives group
+            n_dead -= 1
+            dead.append(self.subject_tribute)
+        else:
+            survive.append(self.subject_tribute)
+
+        for i in range(n_dead):  # Pick random tributes until the number of dead is high enough
+            tribute = random.choice(self.tributes)
+            dead.append(tribute)
+            self.tributes.pop(self.tributes.index(tribute))
+        for tribute in self.tributes:  # Add the rest of the tributes to the survivors
+            survive.append(tribute)
+
+        return dead, survive
 
     def __has_weapon__(self):
         """Returns True if subject tribute has a weapon, False if not"""

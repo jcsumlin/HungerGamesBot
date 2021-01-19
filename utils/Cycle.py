@@ -13,6 +13,9 @@ class Cycle:
         else:
             self.time = "Night"
 
+        self.dead = []
+        self.survive = []
+
         """The weights dictionary defines the probability of any given event
         including x number of tributes"""
         self.weights = {5: 0.1, 4: 0.1, 3: 0.2, 2: 0.4, 1: 0.2}
@@ -73,6 +76,15 @@ class Cycle:
                 event = self.__get_nighttime_event__(tribute_group)
             events.append(event)
         return events
+
+    def resolve_events(self, events):
+        """Resolves the days events by marking tributes as dead or survived"""
+        for event in events:
+            result = event.cull_tributes()
+            for death in result[0]:
+                self.dead.append(death)
+            for survivor in result[1]:
+                self.survive.append(survivor)
 
     @staticmethod
     def __get_daytime_event__(tributes):
