@@ -9,7 +9,7 @@ class Event:
         The prerequisites will be judged against the subject tribute"""
         self.subject_tribute = random.choice(self.tributes)
         self.tributes.pop(self.tributes.index(self.subject_tribute))
-        self.n = len(self.tributes) + len(self.subject_tribute)
+        self.n = len(self.tributes) + 1
 
         # Read the json and populate the object
         self.json = json.loads(json_blob)

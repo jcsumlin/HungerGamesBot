@@ -31,19 +31,19 @@ class Cycle:
 
         while self.unassigned_tributes > 0:
             if self.unassigned_tributes >= 5:
-                n = random.choices(outcomes, probability)
+                n = random.choices(outcomes, probability)[0]
                 list_of_events.append(n)
                 self.unassigned_tributes -= n
             elif self.unassigned_tributes == 4:
-                n = random.choices(outcomes[1:], probability[1:])
+                n = random.choices(outcomes[1:], probability[1:])[0]
                 list_of_events.append(n)
                 self.unassigned_tributes -= n
             elif self.unassigned_tributes == 3:
-                n = random.choices(outcomes[2:], probability[2:])
+                n = random.choices(outcomes[2:], probability[2:])[0]
                 list_of_events.append(n)
                 self.unassigned_tributes -= n
             elif self.unassigned_tributes == 2:
-                n = random.choices(outcomes[3:], probability[3:])
+                n = random.choices(outcomes[3:], probability[3:])[0]
                 list_of_events.append(n)
                 self.unassigned_tributes -= n
             elif self.unassigned_tributes == 1:
@@ -61,7 +61,7 @@ class Cycle:
                 tribute = random.choice(self.tributes)
                 self.tributes.pop(self.tributes.index(tribute))
                 tributes_included.append(tribute)
-            tributes_included.append(sorted_tributes)
+            sorted_tributes.append(tributes_included)
         return sorted_tributes
 
     def get_events(self):
@@ -98,7 +98,7 @@ class Cycle:
             events.append(i)
 
         for event in events:  # Filter by time of day == day
-            if event.time != "day" or "any":
+            if event.time == "night":
                 events.pop(events.index(event))
         for event in events:  # Filter by subject tribute meeting prerequisites
             if not event.subject_meets_prerequisites():
@@ -118,7 +118,7 @@ class Cycle:
             events.append(i)
 
         for event in events:  # Filter by time of day == night
-            if event.time != "night" or "any":
+            if event.time == "day":
                 events.pop(events.index(event))
         for event in events:  # Filter by subject tribute meeting prerequisites
             if not event.subject_meets_prerequisites():
