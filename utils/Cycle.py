@@ -4,7 +4,7 @@ from .Event import Event
 
 
 class Cycle:
-    def __init__(self, tributes: list, daytime: bool):
+    def __init__(self, tributes: list, daytime: bool, ignore_items=False, ignore_alliances=False):
         self.tributes = tributes
         self.number_of_tributes = len(tributes)
         self.unassigned_tributes = self.number_of_tributes
@@ -12,6 +12,8 @@ class Cycle:
             self.time = "Day"
         else:
             self.time = "Night"
+        self.ignore_items = ignore_items
+        self.ignore_alliances = ignore_alliances
 
         self.dead = []
         self.survive = []
@@ -86,8 +88,7 @@ class Cycle:
             for survivor in result[1]:
                 self.survive.append(survivor)
 
-    @staticmethod
-    def __get_daytime_event__(tributes):
+    def __get_daytime_event__(self, tributes):
         """Returns a random daytime event that matches the constraints"""
         n = len(tributes)
         events_for_n_tributes = []  # Placeholder until code is written
@@ -101,13 +102,13 @@ class Cycle:
             if event.time == "night":
                 events.pop(events.index(event))
         for event in events:  # Filter by subject tribute meeting prerequisites
-            if not event.subject_meets_prerequisites():
+            if not event.subject_meets_prerequisites(ignore_items=self.ignore_items,
+                                                     ignore_alliances=self.ignore_alliances):
                 events.pop(events.index(event))
 
         return random.choice(events)  # Return a random event from the remaining candidates
 
-    @staticmethod
-    def __get_nighttime_event__(tributes):
+    def __get_nighttime_event__(self, tributes):
         """Returns a random nighttime event that matches the constraints"""
         n = len(tributes)
         events_for_n_tributes = []  # Placeholder until code is written
@@ -121,7 +122,8 @@ class Cycle:
             if event.time == "day":
                 events.pop(events.index(event))
         for event in events:  # Filter by subject tribute meeting prerequisites
-            if not event.subject_meets_prerequisites():
+            if not event.subject_meets_prerequisites(ignore_items=self.ignore_items,
+                                                     ignore_alliances=self.ignore_alliances):
                 events.pop(events.index(event))
 
         return random.choice(events)  # Return a random event from the remaining candidates

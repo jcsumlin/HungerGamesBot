@@ -21,13 +21,19 @@ class Event:
         self.dies = self.json["dies"]
         self.survives = self.json["survives"]
 
-    def subject_meets_prerequisites(self):
+    def subject_meets_prerequisites(self, ignore_items=False, ignore_alliances=False):
         """Returns True if the subject tribute has all of the prerequisites"""
         matches = 0
+
         for prerequisite in self.prerequisites:  # This loop needs an if case for every type of prerequisite
-            if prerequisite == "hasWeapon":
-                if self.__has_weapon__():
-                    matches += 1
+            if not ignore_items:  # If statements for prerequisites that need items go under here
+                if prerequisite == "hasWeapon":
+                    if self.__has_weapon__():
+                        matches += 1
+            if not ignore_alliances:  # If statements for prerequisites that need alliances go here
+                if prerequisite == "noAlliance":
+                    if self.__no_alliance():
+                        matches += 1
 
         if matches == len(self.prerequisites):
             return True
@@ -59,3 +65,10 @@ class Event:
     def __has_weapon__(self):
         """Returns True if subject tribute has a weapon, False if not"""
         return self.subject_tribute.has_weapon
+
+    def __no_alliance(self):
+        """Returns True if subject tribute has no alliances with included tributes, False if they do"""
+        for tribute in self.tributes:
+            if tribute.id in self.subject_tribute.alliances:
+                return False
+        return True
