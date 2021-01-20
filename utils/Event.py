@@ -15,6 +15,7 @@ class Event:
         self.json = json.loads(json_blob)
         self.id = self.json["id"]
         self.name = self.json["name"]
+        self.string = self.json["string"]
         self.number_of_tributes = self.json["number_of_tributes"]
         self.time = self.json["time"]
         self.prerequisites = self.json["prerequisites"]
