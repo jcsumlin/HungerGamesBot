@@ -29,14 +29,26 @@ class Event:
         matches = 0
 
         for prerequisite in self.prerequisites:  # This loop needs an if case for every type of prerequisite
-            if not ignore_items:  # If statements for prerequisites that need items go under here
-                if prerequisite == "hasWeapon":
+            if prerequisite == "hasWeapon":
+                if not ignore_items:
                     if self.__has_weapon__():
                         matches += 1
-            if not ignore_alliances:  # If statements for prerequisites that need alliances go here
-                if prerequisite == "noAlliance":
+                    else:
+                        matches += 1
+
+            if prerequisite == "noAlliance":
+                if not ignore_alliances:
                     if self.__no_alliance__():
                         matches += 1
+                else:
+                    matches += 1
+
+            if prerequisite == "hasAlliance":
+                if not ignore_alliances:
+                    if self.__has_alliance__():
+                        matches += 1
+                else:
+                    matches += 1
 
         if matches == len(self.prerequisites):
             return True
@@ -47,8 +59,17 @@ class Event:
         """Resolves the event by calling the appropriate function"""
         if self.event_type == "murder":
             return self.__cull_tributes__()
-        elif self.event_type == "alliance":
-            pass
+
+        elif self.event_type == "alliance_formed":
+            self.__alliance_formed__()
+            survivors = [self.subject_tribute]
+            for tribute in self.tributes:
+                survivors.append(tribute)
+            return [], survivors  # Return an empty list in place of dead tributes
+
+        elif self.event_type == "alliance_broken":
+            return self.__alliance_broken__()
+
         elif self.event_type == "injury":
             result = self.__injure_tributes__()
             for tribute in result[0]:
@@ -102,6 +123,31 @@ class Event:
         self.completed = True
         return injured, not_injured
 
+    def __alliance_formed__(self):
+        """Forms an alliance between the tributes"""
+        tributes_involved = [self.subject_tribute]
+        for tribute in self.tributes:  # Add all tributes to the tributes_involved
+            tributes_involved.append(tribute)
+
+        for tribute in tributes_involved:  # Add an alliance for every tribute except themselves
+            for tribute_to_add in tributes_involved:
+                if tribute_to_add.id != tribute.id:
+                    tribute.add_alliance(tribute_to_add.id)
+
+    def __alliance_broken__(self):
+        """Breaks an alliance between the tributes"""
+        tributes_involved = [self.subject_tribute]
+        for tribute in self.tributes:  # Add all tributes to the tributes_involved
+            tributes_involved.append(tribute)
+
+        for tribute in tributes_involved:  # Remove the alliance for every tribute except themselves
+            for tribute_to_remove in tributes_involved:
+                if tribute_to_remove.id != tribute.id:
+                    tribute.remove_alliance(tribute_to_remove.id)
+
+        if self.dies["number"] > 0:  # If event specifies tributes die, kill tributes
+            return self.__cull_tributes__()
+
     def __has_weapon__(self):
         """Returns True if subject tribute has a weapon, False if not"""
         return self.subject_tribute.has_weapon
@@ -112,3 +158,15 @@ class Event:
             if tribute.id in self.subject_tribute.alliances:
                 return False
         return True
+
+    def __has_alliance__(self):
+        """Returns True if subject tribute has an alliance with all included tributes, False if they don't"""
+        alliances = 0
+        for tribute in self.tributes:
+            if tribute.id in self.subject_tribute.alliances:
+                alliances += 1
+
+        if alliances == len(self.tributes):
+            return True
+        else:
+            return False
