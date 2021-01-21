@@ -82,7 +82,7 @@ class Cycle:
     def resolve_events(self, events):
         """Resolves the days events by marking tributes as dead or survived"""
         for event in events:
-            result = event.cull_tributes()
+            result = event.resolve()
             for death in result[0]:
                 self.dead.append(death)
             for survivor in result[1]:

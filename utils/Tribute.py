@@ -8,10 +8,12 @@ class Tribute:
         self.weapons = []
         self.medicine = []
         self.alliances = []  # List of tribute IDs that this tribute has alliances with
+        self.injuries = []
 
         self.has_weapon = False  # This should be True if the Tribute has any weapons
         self.has_medicine = False  # This should be True if the Tribute has any weapons
         self.has_alliance = False  # This should be True if the Tribute has any alliances
+        self.is_injured = False  # This should be True if the Tribute has any injuries
 
     def add_weapon(self, weapon: str):
         if weapon not in self.weapons:  # Avoid dupes
@@ -45,3 +47,14 @@ class Tribute:
             self.alliances.pop(self.alliances.index(alliance))
             if len(self.alliances) == 0:
                 self.has_alliance = False
+
+    def add_injury(self, injury: str):
+        if injury not in self.injuries:  # Avoid dupes
+            self.injuries.append(injury)
+            self.is_injured = True
+
+    def remove_injury(self, injury: str):
+        if injury in self.injuries:
+            self.injuries.pop(self.injuries.index(injury))
+            if len(self.injuries) == 0:
+                self.is_injured = False
