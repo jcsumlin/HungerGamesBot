@@ -15,6 +15,7 @@ class Cycle:
         self.ignore_items = ignore_items
         self.ignore_alliances = ignore_alliances
 
+        self.events = self.get_events()
         self.dead = []
         self.survive = []
 
@@ -79,9 +80,9 @@ class Cycle:
             events.append(event)
         return events
 
-    def resolve_events(self, events):
+    def resolve_events(self):
         """Resolves the days events by marking tributes as dead or survived"""
-        for event in events:
+        for event in self.events:
             result = event.resolve()
             for death in result[0]:
                 self.dead.append(death)
