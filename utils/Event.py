@@ -33,8 +33,8 @@ class Event:
                 if not ignore_items:
                     if self.__has_weapon__():
                         matches += 1
-                    else:
-                        matches += 1
+                else:
+                    matches += 1
 
             if prerequisite == "noAlliance":
                 if not ignore_alliances:
@@ -46,6 +46,13 @@ class Event:
             if prerequisite == "hasAlliance":
                 if not ignore_alliances:
                     if self.__has_alliance__():
+                        matches += 1
+                else:
+                    matches += 1
+
+            if prerequisite == "hasMedicine":
+                if not ignore_items:
+                    if self.__has_medicine__():
                         matches += 1
                 else:
                     matches += 1
@@ -74,6 +81,38 @@ class Event:
             result = self.__injure_tributes__()
             for tribute in result[0]:
                 tribute.add_injury("injury")
+            survivors = [self.subject_tribute]
+            for tribute in self.tributes:
+                survivors.append(tribute)
+            return [], survivors  # Return an empty list in place of dead tributes
+
+        elif self.event_type == "remove_injury":
+            n_injuries = len(self.subject_tribute.injuries)
+            index = random.randint(0, n_injuries - 1)
+            injury_to_remove = self.subject_tribute.injuries[index]
+            self.subject_tribute.remove_injury(injury_to_remove)
+            survivors = [self.subject_tribute]
+            for tribute in self.tributes:
+                survivors.append(tribute)
+            return [], survivors  # Return an empty list in place of dead tributes
+
+        elif self.event_type == "get_weapon":
+            weapon = self.json["weapon"]
+            self.subject_tribute.add_weapon(weapon)
+            survivors = [self.subject_tribute]
+            for tribute in self.tributes:
+                survivors.append(tribute)
+            return [], survivors  # Return an empty list in place of dead tributes
+
+        elif self.event_type == "get_medicine":
+            medicine = self.json["medicine"]
+            self.subject_tribute.add_medicine(medicine)
+            survivors = [self.subject_tribute]
+            for tribute in self.tributes:
+                survivors.append(tribute)
+            return [], survivors  # Return an empty list in place of dead tributes
+
+        elif self.event_type == "neutral":  # Default type for an event where no-one dies or is injured.
             survivors = [self.subject_tribute]
             for tribute in self.tributes:
                 survivors.append(tribute)
@@ -150,7 +189,20 @@ class Event:
 
     def __has_weapon__(self):
         """Returns True if subject tribute has a weapon, False if not"""
+        if "weapon" in self.json:  # Check if a weapon is specified
+            if self.json["weapon"] in self.subject_tribute.weapons:
+                return True
+            else:
+                return False
         return self.subject_tribute.has_weapon
+
+    def __has_medicine__(self):
+        """Returns True if subject tribute has medicine, False if not"""
+        if "medicine" in self.json:  # Check if a medicine is specified
+            if self.json["medicine"] in self.subject_tribute.medicine:
+                return True
+            else:
+                return False
 
     def __no_alliance__(self):
         """Returns True if subject tribute has no alliances with included tributes, False if they do"""
