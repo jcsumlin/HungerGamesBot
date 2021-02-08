@@ -24,6 +24,9 @@ class Event:
         self.dies = self.json["dies"]
         self.survives = self.json["survives"]
 
+        self.dead = []
+        self.survived = []
+
     def subject_meets_prerequisites(self, ignore_items=False, ignore_alliances=False):
         """Returns True if the subject tribute has all of the prerequisites"""
         matches = 0
@@ -65,81 +68,69 @@ class Event:
     def resolve(self):
         """Resolves the event by calling the appropriate function"""
         if self.event_type == "murder":
-            return self.__cull_tributes__()
+            self.__cull_tributes__()
 
         elif self.event_type == "alliance_formed":
             self.__alliance_formed__()
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
         elif self.event_type == "alliance_broken":
-            return self.__alliance_broken__()
+            self.__alliance_broken__()
 
         elif self.event_type == "injury":
             result = self.__injure_tributes__()
             for tribute in result[0]:
                 tribute.add_injury("injury")
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
         elif self.event_type == "remove_injury":
             n_injuries = len(self.subject_tribute.injuries)
             index = random.randint(0, n_injuries - 1)
             injury_to_remove = self.subject_tribute.injuries[index]
             self.subject_tribute.remove_injury(injury_to_remove)
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
         elif self.event_type == "get_weapon":
             weapon = self.json["weapon"]
             self.subject_tribute.add_weapon(weapon)
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
         elif self.event_type == "get_medicine":
             medicine = self.json["medicine"]
             self.subject_tribute.add_medicine(medicine)
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
         elif self.event_type == "neutral":  # Default type for an event where no-one dies or is injured.
-            survivors = [self.subject_tribute]
+            self.survived.append(self.subject_tribute)
             for tribute in self.tributes:
-                survivors.append(tribute)
-            return [], survivors  # Return an empty list in place of dead tributes
+                self.survived.append(tribute)
 
     def __cull_tributes__(self):
         """Randomly selects tributes involved in the event to either die or survive"""
         n_dead = self.dies["number"]
 
-        dead = []
-        survive = []
-
         if self.dies["subject"]:  # Remove the subject from the dies/survives group
             n_dead -= 1
-            dead.append(self.subject_tribute)
+            self.dead.append(self.subject_tribute)
         else:
-            survive.append(self.subject_tribute)
+            self.survived.append(self.subject_tribute)
 
         for i in range(n_dead):  # Pick random tributes until the number of dead is high enough
             tribute = random.choice(self.tributes)
-            dead.append(tribute)
+            self.dead.append(tribute)
             self.tributes.pop(self.tributes.index(tribute))
         for tribute in self.tributes:  # Add the rest of the tributes to the survivors
-            survive.append(tribute)
-
-        self.completed = True
-        return dead, survive
+            self.survived.append(tribute)
 
     def __injure_tributes__(self):
         """Randomly selects tributes involved in the event to be injured"""
@@ -185,7 +176,7 @@ class Event:
                     tribute.remove_alliance(tribute_to_remove.id)
 
         if self.dies["number"] > 0:  # If event specifies tributes die, kill tributes
-            return self.__cull_tributes__()
+            self.__cull_tributes__()
 
     def __has_weapon__(self):
         """Returns True if subject tribute has a weapon, False if not"""

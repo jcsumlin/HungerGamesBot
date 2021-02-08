@@ -15,7 +15,7 @@ class Cycle:
         self.ignore_items = ignore_items
         self.ignore_alliances = ignore_alliances
 
-        self.events = self.get_events()
+        self.events = self.__get_events__()
         self.dead = []
         self.survive = []
 
@@ -55,7 +55,16 @@ class Cycle:
 
         return list_of_events
 
-    def select_tributes(self, list_of_events: list):
+    def resolve_events(self):
+        """Resolves the days events by marking tributes as dead or survived"""
+        for event in self.events:
+            event.resolve()
+            for death in event.dead:
+                self.dead.append(death)
+            for survivor in event.survived:
+                self.survive.append(survivor)
+
+    def __select_tributes__(self, list_of_events: list):
         """Sorts tributes into a list of groups of tributes involved in each event"""
         sorted_tributes = []
         for event in list_of_events:
@@ -67,11 +76,11 @@ class Cycle:
             sorted_tributes.append(tributes_included)
         return sorted_tributes
 
-    def get_events(self):
+    def __get_events__(self):
         """Returns the days events as a list of event objects"""
         events = []
         list_of_events = self.find_number_of_tributes_in_events()
-        tribute_groups = self.select_tributes(list_of_events)
+        tribute_groups = self.__select_tributes__(list_of_events)
         for tribute_group in tribute_groups:
             if self.time == "Day":
                 event = self.__get_daytime_event__(tribute_group)
@@ -79,15 +88,6 @@ class Cycle:
                 event = self.__get_nighttime_event__(tribute_group)
             events.append(event)
         return events
-
-    def resolve_events(self):
-        """Resolves the days events by marking tributes as dead or survived"""
-        for event in self.events:
-            result = event.resolve()
-            for death in result[0]:
-                self.dead.append(death)
-            for survivor in result[1]:
-                self.survive.append(survivor)
 
     def __get_daytime_event__(self, tributes):
         """Returns a random daytime event that matches the constraints"""
