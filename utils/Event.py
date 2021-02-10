@@ -115,6 +115,37 @@ class Event:
             for tribute in self.tributes:
                 self.survived.append(tribute)
 
+        self.completed = True
+
+    def get_formatted_string(self):
+        if not self.completed:
+            raise Exception("Please resolve the event before generating a formatted string.")
+        if self.n == 1:
+            string = self.string.format(subject=self.subject_tribute)
+            return string
+        elif self.n == 2:
+            string = self.string.format(self.tributes[0],
+                                        subject=self.subject_tribute)
+            return string
+        elif self.n == 3:
+            string = self.string.format(self.tributes[0],
+                                        self.tributes[1],
+                                        subject=self.subject_tribute)
+            return string
+        elif self.n == 4:
+            string = self.string.format(self.tributes[0],
+                                        self.tributes[1],
+                                        self.tributes[2],
+                                        subject=self.subject_tribute)
+            return string
+        elif self.n == 5:
+            string = self.string.format(self.tributes[0],
+                                        self.tributes[1],
+                                        self.tributes[2],
+                                        self.tributes[3],
+                                        subject=self.subject_tribute)
+            return string
+
     def __cull_tributes__(self):
         """Randomly selects tributes involved in the event to either die or survive"""
         n_dead = self.dies["number"]
