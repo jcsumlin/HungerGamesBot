@@ -120,31 +120,110 @@ class Event:
     def get_formatted_string(self):
         if not self.completed:
             raise Exception("Please resolve the event before generating a formatted string.")
+
+        if self.dies["number"] == 0:
+            return self.__get_formatted_not_fatal__()
+        elif self.dies["number"] > 0:
+            return self.__get_formatted_fatal__()
+
+    def __get_formatted_not_fatal__(self):
         if self.n == 1:
-            string = self.string.format(subject=self.subject_tribute)
+            string = self.string.format(subject=self.subject_tribute.name)
             return string
         elif self.n == 2:
-            string = self.string.format(self.tributes[0],
-                                        subject=self.subject_tribute)
+            string = self.string.format(self.tributes[0].name,
+                                        subject=self.subject_tribute.name)
             return string
         elif self.n == 3:
-            string = self.string.format(self.tributes[0],
-                                        self.tributes[1],
-                                        subject=self.subject_tribute)
+            string = self.string.format(self.tributes[0].name,
+                                        self.tributes[1].name,
+                                        subject=self.subject_tribute.name)
             return string
         elif self.n == 4:
-            string = self.string.format(self.tributes[0],
-                                        self.tributes[1],
-                                        self.tributes[2],
-                                        subject=self.subject_tribute)
+            string = self.string.format(self.tributes[0].name,
+                                        self.tributes[1].name,
+                                        self.tributes[2].name,
+                                        subject=self.subject_tribute.name)
             return string
         elif self.n == 5:
-            string = self.string.format(self.tributes[0],
-                                        self.tributes[1],
-                                        self.tributes[2],
-                                        self.tributes[3],
-                                        subject=self.subject_tribute)
+            string = self.string.format(self.tributes[0].name,
+                                        self.tributes[1].name,
+                                        self.tributes[2].name,
+                                        self.tributes[3].name,
+                                        subject=self.subject_tribute.name)
             return string
+
+    def __get_formatted_fatal__(self):
+        if self.n == 1:
+            string = self.string.format(subject=self.subject_tribute.name)
+            return string
+        elif self.n == 2:
+            string = self.string.format(subject=self.subject_tribute.name,
+                                        first_dead=self.dead[0].name)
+            return string
+        elif self.n == 3:
+            # Determine which outcome occurred (either 1, 2, or 3 died)
+            if self.dies["number"] == 1:
+                string = self.string.format(self.tributes[0].name,
+                                            subject=self.subject_tribute.name,
+                                            first_dead=self.dead[0].name)
+                return string
+            elif self.dies["number"] >= 2:
+                string = self.string.format(subject=self.subject_tribute.name,
+                                            first_dead=self.dead[0].name,
+                                            second_dead=self.dead[1].name)
+                return string
+        elif self.n == 4:
+            # Determine which outcome occurred (either 1, 2 3 or 4 died)
+            if self.dies["number"] == 1:
+                string = self.string.format(self.tributes[0].name,
+                                            self.tributes[1].name,
+                                            subject=self.subject_tribute.name,
+                                            first_dead=self.dead[0].name)
+                return string
+            elif self.dies["number"] == 2:
+                string = self.string.format(self.tributes[0].name,
+                                            subject=self.subject_tribute.name,
+                                            first_dead=self.dead[0].name,
+                                            second_dead=self.dead[1].name)
+                return string
+            elif self.dies["number"] >= 3:
+                string = self.string.format(subject=self.subject_tribute.name,
+                                            first_dead=self.dead[0].name,
+                                            second_dead=self.dead[1].name,
+                                            third_dead=self.dead[2].name)
+                return string
+        elif self.n == 5:
+            # Determine which outcome occurred (either 1, 2, 3, 4 or 5 died)
+            if self.dies["number"] == 1:
+                if self.dies["number"] == 1:
+                    string = self.string.format(self.tributes[0].name,
+                                                self.tributes[1].name,
+                                                self.tributes[2].name,
+                                                subject=self.subject_tribute.name,
+                                                first_dead=self.dead[0].name)
+                    return string
+                elif self.dies["number"] == 2:
+                    string = self.string.format(self.tributes[0].name,
+                                                self.tributes[1].name,
+                                                subject=self.subject_tribute.name,
+                                                first_dead=self.dead[0].name,
+                                                second_dead=self.dead[1].name)
+                    return string
+                elif self.dies["number"] == 3:
+                    string = self.string.format(self.tributes[0].name,
+                                                subject=self.subject_tribute.name,
+                                                first_dead=self.dead[0].name,
+                                                second_dead=self.dead[1].name,
+                                                third_dead=self.dead[2].name)
+                    return string
+                elif self.dies["number"] >= 4:
+                    string = self.string.format(subject=self.subject_tribute.name,
+                                                first_dead=self.dead[0].name,
+                                                second_dead=self.dead[1].name,
+                                                third_dead=self.dead[2].name,
+                                                fourth_dead=self.dead[3].name)
+                    return string
 
     def __cull_tributes__(self):
         """Randomly selects tributes involved in the event to either die or survive"""
