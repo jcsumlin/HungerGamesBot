@@ -21,6 +21,12 @@ class Event:
         self.number_of_tributes = self.json["number_of_tributes"]
         self.time = self.json["time"]
         self.prerequisites = self.json["prerequisites"]
+        if "partialAlliance" in self.prerequisites:
+            self.has_partial_alliance = True
+            self.n_partial = self.json["partial_alliance_number"]
+            self.tributes_allied = []
+        else:
+            self.has_partial_alliance = False
         self.dies = self.json["dies"]
         self.survives = self.json["survives"]
 
@@ -131,25 +137,25 @@ class Event:
             string = self.string.format(subject=self.subject_tribute.name)
             return string
         elif self.n == 2:
-            string = self.string.format(self.tributes[0].name,
+            string = self.string.format(self.survived[0].name,
                                         subject=self.subject_tribute.name)
             return string
         elif self.n == 3:
-            string = self.string.format(self.tributes[0].name,
-                                        self.tributes[1].name,
+            string = self.string.format(self.survived[0].name,
+                                        self.survived[1].name,
                                         subject=self.subject_tribute.name)
             return string
         elif self.n == 4:
-            string = self.string.format(self.tributes[0].name,
-                                        self.tributes[1].name,
-                                        self.tributes[2].name,
+            string = self.string.format(self.survived[0].name,
+                                        self.survived[1].name,
+                                        self.survived[2].name,
                                         subject=self.subject_tribute.name)
             return string
         elif self.n == 5:
-            string = self.string.format(self.tributes[0].name,
-                                        self.tributes[1].name,
-                                        self.tributes[2].name,
-                                        self.tributes[3].name,
+            string = self.string.format(self.survived[0].name,
+                                        self.survived[1].name,
+                                        self.survived[2].name,
+                                        self.survived[3].name,
                                         subject=self.subject_tribute.name)
             return string
 
@@ -164,7 +170,7 @@ class Event:
         elif self.n == 3:
             # Determine which outcome occurred (either 1, 2, or 3 died)
             if self.dies["number"] == 1:
-                string = self.string.format(self.tributes[0].name,
+                string = self.string.format(self.survived[0].name,
                                             subject=self.subject_tribute.name,
                                             first_dead=self.dead[0].name)
                 return string
@@ -176,13 +182,13 @@ class Event:
         elif self.n == 4:
             # Determine which outcome occurred (either 1, 2 3 or 4 died)
             if self.dies["number"] == 1:
-                string = self.string.format(self.tributes[0].name,
-                                            self.tributes[1].name,
+                string = self.string.format(self.survived[0].name,
+                                            self.survived[1].name,
                                             subject=self.subject_tribute.name,
                                             first_dead=self.dead[0].name)
                 return string
             elif self.dies["number"] == 2:
-                string = self.string.format(self.tributes[0].name,
+                string = self.string.format(self.survived[0].name,
                                             subject=self.subject_tribute.name,
                                             first_dead=self.dead[0].name,
                                             second_dead=self.dead[1].name)
@@ -197,21 +203,21 @@ class Event:
             # Determine which outcome occurred (either 1, 2, 3, 4 or 5 died)
             if self.dies["number"] == 1:
                 if self.dies["number"] == 1:
-                    string = self.string.format(self.tributes[0].name,
-                                                self.tributes[1].name,
-                                                self.tributes[2].name,
+                    string = self.string.format(self.survived[0].name,
+                                                self.survived[1].name,
+                                                self.survived[2].name,
                                                 subject=self.subject_tribute.name,
                                                 first_dead=self.dead[0].name)
                     return string
                 elif self.dies["number"] == 2:
-                    string = self.string.format(self.tributes[0].name,
-                                                self.tributes[1].name,
+                    string = self.string.format(self.survived[0].name,
+                                                self.survived[1].name,
                                                 subject=self.subject_tribute.name,
                                                 first_dead=self.dead[0].name,
                                                 second_dead=self.dead[1].name)
                     return string
                 elif self.dies["number"] == 3:
-                    string = self.string.format(self.tributes[0].name,
+                    string = self.string.format(self.survived[0].name,
                                                 subject=self.subject_tribute.name,
                                                 first_dead=self.dead[0].name,
                                                 second_dead=self.dead[1].name,
@@ -235,6 +241,12 @@ class Event:
         else:
             self.survived.append(self.subject_tribute)
 
+        if self.has_partial_alliance:
+            # Remove allied tributes from the pool and add them to survived
+            for allied_tribute in self.tributes_allied:
+                self.tributes.pop(self.tributes.index(allied_tribute))
+                self.survived.append(allied_tribute)
+
         for i in range(n_dead):  # Pick random tributes until the number of dead is high enough
             tribute = random.choice(self.tributes)
             self.dead.append(tribute)
@@ -252,6 +264,12 @@ class Event:
         if self.dies["subject"]:  # Remove the subject from the injured group
             n_injured -= 1
             injured.append(self.subject_tribute)
+
+        if self.has_partial_alliance:
+            # Remove the allied tributes from the pool and add them to not_injured
+            for allied_tribute in self.tributes_allied:
+                self.tributes.pop(self.tributes.index(allied_tribute))
+                not_injured.append(allied_tribute)
 
         if len(self.tributes) > 0:
             for i in range(n_injured):  # Pick random tributes until the number injured is high enough
@@ -306,7 +324,7 @@ class Event:
                 return False
 
     def __no_alliance__(self):
-        """Returns True if subject tribute has no alliances with included tributes, False if they do"""
+        """Returns True if subject tribute has no alliances with included tributes, False if they don't"""
         for tribute in self.tributes:
             if tribute.id in self.subject_tribute.alliances:
                 return False
@@ -320,6 +338,19 @@ class Event:
                 alliances += 1
 
         if alliances == len(self.tributes):
+            return True
+        else:
+            return False
+
+    def __partial_alliance__(self):
+        """Returns true if subject tribute has an alliance with the specified number of tributes, False if they don't"""
+        alliances = 0
+        for tribute in self.tributes:
+            if tribute.id in self.subject_tribute.alliances:
+                self.tributes_allied.append(tribute)  # Create a list of allied tributes so they don't get killed
+                alliances += 1
+
+        if alliances == self.n_partial:
             return True
         else:
             return False
